@@ -224,7 +224,36 @@ Todo sincronizado entre robot, simulación y toolbox.
 ---
 
 
+### Diagrama de flujo de acciones del robot
 
+ ```mermaid
+flowchart TD
+    A[Inicio del sistema] --> B[Encender Phantom X Pincher<br/>y configurar hardware Dynamixel]
+    B --> C[Iniciar workspace phantom_ws<br/>y lanzar nodos de control]
+    C --> D[Publicar estado articular<br/>(Joint State Publisher)]
+    D --> E[Cargar modelo URDF/XACRO<br/>y visualizar en RViz]
+    E --> F[Medir eslabones con calibrador<br/>y verificar con modelos 3D]
+    F --> G[Construir tabla DH<br/>y validar cinemática directa]
+    G --> H[Sincronizar modelo DH con URDF/RViz]
+    H --> I[Ejecutar script Python<br/>de conexión con ROS 2]
+    I --> J[Control en espacio articular<br/>vía sliders y valores numéricos en HMI]
+    J --> K[Publicar comandos Dynamixel<br/>para cada articulación]
+    K --> L[Robot real se mueve a la configuración solicitada]
+    L --> M[Visualizar movimiento en RViz<br/>y comparar con modelo DH]
+    M --> N{¿Coincide la pose real<br/>con la pose simulada?}
+
+    N -->|Sí| O[Registrar pose válida<br/>y continuar con pruebas]
+    N -->|No| P[Revisar DH, offsets y ejes<br/>Ajustar modelo y repetir]
+
+    O --> Q[Enviar 5 poses predefinidas<br/>desde la HMI]
+    Q --> R[Capturar trayectoria<br/>y posición final del TCP]
+    R --> S[Grabar video<br/>de ejecución de poses]
+    S --> T[Fin del proceso]
+
+    P --> G
+
+
+ ```
 
 
 
